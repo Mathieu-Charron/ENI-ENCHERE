@@ -1,98 +1,81 @@
--- Script de création de la base de données ENCHERES
---   type :      SQL Server 2012
---
-
-
-
 CREATE TABLE CATEGORIES (
-    no_categorie   INTEGER IDENTITY(1,1) NOT NULL,
-    libelle        VARCHAR(30) NOT NULL
+category_id INTEGER IDENTITY(1,1) NOT NULL,
+label VARCHAR(30) NOT NULL
 )
 
-ALTER TABLE CATEGORIES ADD constraint categorie_pk PRIMARY KEY (no_categorie)
+ALTER TABLE CATEGORIES ADD CONSTRAINT category_pk PRIMARY KEY (category_id)
 
-  
-
-CREATE TABLE UTILISATEURS (
-    no_utilisateur   INTEGER IDENTITY(1,1) NOT NULL,
-    pseudo           VARCHAR(30) NOT NULL,
-    nom              VARCHAR(30) NOT NULL,
-    prenom           VARCHAR(30) NOT NULL,
-    email            VARCHAR(50) NOT NULL,
-    telephone        VARCHAR(15),
-    rue              VARCHAR(30) NOT NULL,
-    code_postal      VARCHAR(10) NOT NULL,
-    ville            VARCHAR(50) NOT NULL,
-    mot_de_passe     VARCHAR(30) NOT NULL,
-    credit           INTEGER NOT NULL,
-    administrateur   bit NOT NULL
+CREATE TABLE USERS (
+user_id INTEGER IDENTITY(1,1) NOT NULL,
+username VARCHAR(30) NOT NULL,
+last_name VARCHAR(30) NOT NULL,
+first_name VARCHAR(30) NOT NULL,
+email VARCHAR(50) NOT NULL,
+phone VARCHAR(15),
+street VARCHAR(30) NOT NULL,
+postal_code VARCHAR(10) NOT NULL,
+city VARCHAR(50) NOT NULL,
+password VARCHAR(30) NOT NULL,
+credit INTEGER NOT NULL,
+administrator bit NOT NULL
 )
 
-ALTER TABLE UTILISATEURS ADD constraint utilisateur_pk PRIMARY KEY (no_utilisateur)
+ALTER TABLE USERS ADD CONSTRAINT user_pk PRIMARY KEY (user_id)
 
-
-CREATE TABLE ARTICLES_VENDUS (
-    no_article                    INTEGER IDENTITY(1,1) NOT NULL,
-    nom_article                   VARCHAR(30) NOT NULL,
-    description                   VARCHAR(300) NOT NULL,
-	date_debut_encheres           DATE NOT NULL,
-    date_fin_encheres             DATE NOT NULL,
-    prix_initial                  INTEGER,
-    prix_vente                    INTEGER,
-    no_utilisateur                INTEGER NOT NULL,
-    no_categorie                  INTEGER NOT NULL
+CREATE TABLE SOLD_ITEMS (
+item_id INTEGER IDENTITY(1,1) NOT NULL,
+item_name VARCHAR(30) NOT NULL,
+description VARCHAR(300) NOT NULL,
+start_date DATE NOT NULL,
+end_date DATE NOT NULL,
+initial_price INTEGER,
+sale_price INTEGER,
+user_id INTEGER NOT NULL,
+category_id INTEGER NOT NULL
 )
 
+ALTER TABLE SOLD_ITEMS ADD CONSTRAINT sold_items_pk PRIMARY KEY (item_id)
 
-
-ALTER TABLE ARTICLES_VENDUS ADD constraint articles_vendus_pk PRIMARY KEY (no_article)
-
-
-CREATE TABLE RETRAITS (
-	no_article       INTEGER NOT NULL,
-    rue              VARCHAR(30) NOT NULL,
-    code_postal      VARCHAR(15) NOT NULL,
-    ville            VARCHAR(30) NOT NULL
+CREATE TABLE WITHDRAWALS (
+item_id INTEGER NOT NULL,
+street VARCHAR(30) NOT NULL,
+postal_code VARCHAR(15) NOT NULL,
+city VARCHAR(30) NOT NULL
 )
 
-ALTER TABLE RETRAITS ADD constraint retrait_pk PRIMARY KEY  (no_article)
-ALTER TABLE RETRAITS
-    ADD CONSTRAINT retrait_article_fk FOREIGN KEY ( no_article ) REFERENCES  ARTICLES_VENDUS (no_article)
-ON DELETE NO ACTION 
-    ON UPDATE no action 
+ALTER TABLE WITHDRAWALS ADD CONSTRAINT withdrawal_pk PRIMARY KEY (item_id)
 
+ALTER TABLE WITHDRAWALS
+ADD CONSTRAINT withdrawal_item_fk FOREIGN KEY (item_id) REFERENCES SOLD_ITEMS (item_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
 
-CREATE TABLE ENCHERES(	
-	no_enchere  INTEGER IDENTITY(1,1) NOT NULL,
-	date_enchere datetime NOT NULL,
-	montant_enchere INTEGER NOT NULL,
-	no_article INTEGER NOT NULL,
-	no_utilisateur INTEGER NOT NULL
- )
+CREATE TABLE BIDS (
+bid_id INTEGER IDENTITY(1,1) NOT NULL,
+bid_date DATETIME NOT NULL,
+bid_amount INTEGER NOT NULL,
+item_id INTEGER NOT NULL,
+user_id INTEGER NOT NULL
+)
 
-ALTER TABLE ENCHERES ADD constraint enchere_pk PRIMARY KEY ( no_enchere)
- 
-ALTER TABLE ENCHERES
-    ADD CONSTRAINT encheres_utilisateur_fk FOREIGN KEY ( no_utilisateur ) REFERENCES UTILISATEURS ( no_utilisateur )
-ON DELETE NO ACTION 
-    ON UPDATE no action 
+ALTER TABLE BIDS ADD CONSTRAINT bid_pk PRIMARY KEY (bid_id)
 
-ALTER TABLE ENCHERES
-    ADD CONSTRAINT encheres_no_article_fk FOREIGN KEY ( no_article ) REFERENCES ARTICLES_VENDUS ( no_article )
-ON DELETE NO ACTION 
-    ON UPDATE no action 
-	
+ALTER TABLE BIDS
+ADD CONSTRAINT bid_user_fk FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
 
-ALTER TABLE ARTICLES_VENDUS
-    ADD CONSTRAINT articles_vendus_categories_fk FOREIGN KEY ( no_categorie )
-        REFERENCES categories ( no_categorie )
-ON DELETE NO ACTION 
-    ON UPDATE no action 
+ALTER TABLE BIDS
+ADD CONSTRAINT bid_item_fk FOREIGN KEY (item_id) REFERENCES SOLD_ITEMS (item_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
 
-ALTER TABLE ARTICLES_VENDUS
-    ADD CONSTRAINT ventes_utilisateur_fk FOREIGN KEY ( no_utilisateur )
-        REFERENCES utilisateurs ( no_utilisateur )
-ON DELETE NO ACTION 
-    ON UPDATE no action 
+ALTER TABLE SOLD_ITEMS
+ADD CONSTRAINT sold_items_category_fk FOREIGN KEY (category_id) REFERENCES CATEGORIES (category_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
 
-
+ALTER TABLE SOLD_ITEMS
+ADD CONSTRAINT sold_items_user_fk FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
