@@ -100,7 +100,5 @@ public class User {
 				+ postalCode + ", city=" + city + ", password=" + password + ", credit=" + credit + ", administrator="
 				+ administrator + "]";
 	}
-	
-	
-	
+
 }
